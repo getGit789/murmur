@@ -26,6 +26,7 @@ class MainWindow(QMainWindow):
     stop_requested = Signal()
     quit_requested = Signal()
     dictionary_changed = Signal()
+    fast_mode_changed = Signal()
 
     def __init__(self, history: History, dictionary: Dictionary) -> None:
         super().__init__()
@@ -113,6 +114,10 @@ class MainWindow(QMainWindow):
             action.triggered.connect(lambda _=False, fn=path_fn: _reveal(fn()))
             file_menu.addAction(action)
 
+        fast_action = QAction("Turn on &Fast Mode (Groq)...", self)
+        fast_action.triggered.connect(self.open_groq_setup)
+        file_menu.addAction(fast_action)
+
         file_menu.addSeparator()
         hide_action = QAction("&Hide to tray", self)
         hide_action.setShortcut(QKeySequence("Ctrl+W"))
@@ -161,6 +166,16 @@ class MainWindow(QMainWindow):
             f"Speech stays on this machine when the engine is set to local.<br><br>"
             f"<a href='https://github.com/getGit789/murmur'>github.com/getGit789/murmur</a>",
         )
+
+    def open_groq_setup(self) -> None:
+        from .groq_setup import GroqSetupDialog
+
+        dialog = GroqSetupDialog(self)
+        dialog.applied.connect(self.fast_mode_changed.emit)
+        dialog.applied.connect(
+            lambda: self.statusBar().showMessage("Fast Mode is on. Warming up...")
+        )
+        dialog.exec()
 
     def open_settings(self) -> None:
         window = SettingsWindow(self)

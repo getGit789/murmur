@@ -28,11 +28,24 @@ anywhere, and run `Murmur.exe`.
 Then hold **Right Ctrl** in any app, talk, and let go.
 
 **Out of the box** Murmur listens with a Whisper model on your own CPU —
-private, free, no account. **Want it faster?** Get a free API key at
-[console.groq.com](https://console.groq.com), open Settings
-(**Ctrl+comma**), paste it into the **Groq key** field, and switch the
-engine to `groq`. Same free price, cloud speed — and if the network
-drops, Murmur quietly falls back to the local model.
+private, free, no account.
+
+**Want it faster? Turn on Fast Mode.** Groq is a free cloud service that
+transcribes in about a second. The first time you open Murmur it offers
+to set this up; you can also do it any time from
+**File → Turn on Fast Mode (Groq)**:
+
+![Fast Mode](docs/fast-mode.png)
+
+1. Press **Open the Groq key page**. Your browser opens
+   [console.groq.com/keys](https://console.groq.com/keys).
+2. Sign in, press **Create API Key**, then **Copy**.
+3. Back in Murmur, press **Paste**, then **Save**.
+
+That is it — the speed is on right away, no restart. Your key is stored
+on your own machine (`%APPDATA%\Murmur\groq.key`), never in the app
+download. If the network ever drops, Murmur quietly falls back to the
+local model.
 
 ## Uninstall
 

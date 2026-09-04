@@ -77,6 +77,16 @@ class Controller(QObject):
     def reload_dictionary(self) -> None:
         self.dictionary = Dictionary.load()
 
+    def reload_engine(self) -> None:
+        """Rebuild the engine after a settings change, then warm it up.
+
+        Used when Fast Mode is switched on, so the new key and backend
+        take effect without restarting the app.
+        """
+        self.settings = config.load()
+        self.engine = engines.build(self.settings["engine"])
+        self.warm_up()
+
     # ---- transport ------------------------------------------------------
 
     @property

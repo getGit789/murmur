@@ -136,6 +136,7 @@ def run() -> int:
     window.start_requested.connect(controller.start)
     window.stop_requested.connect(controller.stop)
     window.dictionary_changed.connect(controller.reload_dictionary)
+    window.fast_mode_changed.connect(controller.reload_engine)
 
     # ---- tray: secondary, for when the window is not in front -----------
 
@@ -197,8 +198,29 @@ def run() -> int:
     server = _claim_single_instance(window)
     if not hidden:
         window.show()
+        _maybe_offer_fast_mode(window, settings)
     controller.warm_up()
     return app.exec()
+
+
+def _maybe_offer_fast_mode(window: MainWindow, settings) -> None:
+    """First time only, if there is no key, show the one-click setup.
+
+    A marker file makes sure this happens once, never on every launch.
+    """
+    from ..engines.groq_api import read_key
+
+    marker = config.config_dir() / ".fastmode_offered"
+    if marker.exists() or read_key():
+        return
+    if settings.get("engine", {}).get("backend") == "groq":
+        return
+    try:
+        marker.parent.mkdir(parents=True, exist_ok=True)
+        marker.write_text("offered", encoding="utf-8")
+    except OSError:
+        pass
+    QTimer.singleShot(700, window.open_groq_setup)
 
 
 def _start_hidden(settings) -> bool:
