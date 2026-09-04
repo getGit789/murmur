@@ -38,6 +38,24 @@ $s.IconLocation     = "$target\_internal\assets\murmur.ico"
 $s.Description      = "Murmur - Speak. It types."
 $s.Save()
 
+# Tell Windows the app exists, so it shows up in "Apps & features"
+# (and in uninstall tools) with a working Uninstall button.
+$reg = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\Murmur"
+$un  = "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$target\_internal\uninstall.ps1`""
+New-Item -Path $reg -Force | Out-Null
+New-ItemProperty -Path $reg -Name DisplayName     -Value "Murmur" -PropertyType String -Force | Out-Null
+New-ItemProperty -Path $reg -Name DisplayVersion  -Value $release.tag_name.TrimStart("v") -PropertyType String -Force | Out-Null
+New-ItemProperty -Path $reg -Name Publisher       -Value "Damir Kranjcevic" -PropertyType String -Force | Out-Null
+New-ItemProperty -Path $reg -Name InstallLocation -Value $target -PropertyType String -Force | Out-Null
+New-ItemProperty -Path $reg -Name DisplayIcon     -Value "$target\Murmur.exe" -PropertyType String -Force | Out-Null
+New-ItemProperty -Path $reg -Name UninstallString -Value $un -PropertyType String -Force | Out-Null
+New-ItemProperty -Path $reg -Name QuietUninstallString -Value $un -PropertyType String -Force | Out-Null
+New-ItemProperty -Path $reg -Name HelpLink        -Value "https://github.com/getGit789/murmur" -PropertyType String -Force | Out-Null
+New-ItemProperty -Path $reg -Name NoModify        -Value 1 -PropertyType DWord -Force | Out-Null
+New-ItemProperty -Path $reg -Name NoRepair        -Value 1 -PropertyType DWord -Force | Out-Null
+$kb = [math]::Round((Get-ChildItem $target -Recurse | Measure-Object Length -Sum).Sum / 1KB)
+New-ItemProperty -Path $reg -Name EstimatedSize   -Value $kb -PropertyType DWord -Force | Out-Null
+
 Write-Host ""
 Write-Host "Installed. Hold Right Ctrl in any app, talk, let go - it types."
 Write-Host "Settings live under Ctrl+comma. Uninstall: delete $target"

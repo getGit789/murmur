@@ -9,6 +9,7 @@ taskkill /im Murmur.exe /f >nul 2>&1
 if exist "%SU%" del "%SU%"
 if exist "%SM%" del "%SM%"
 if exist "%TARGET%" rmdir /s /q "%TARGET%"
+reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Uninstall\Murmur" /f >nul 2>&1
 
 echo Murmur removed.
 echo Your settings are still at %APPDATA%\Murmur ^(delete by hand if you want^).

@@ -156,9 +156,10 @@ class MainWindow(QMainWindow):
         QMessageBox.about(
             self,
             "About Murmur",
-            f"<b>{brand.NAME}</b><br>{brand.TAGLINE}<br><br>"
+            f"<b>{brand.NAME} {brand.VERSION}</b><br>{brand.TAGLINE}<br><br>"
             f"Push to talk dictation.<br>"
-            f"Speech stays on this machine when the engine is set to local.",
+            f"Speech stays on this machine when the engine is set to local.<br><br>"
+            f"<a href='https://github.com/getGit789/murmur'>github.com/getGit789/murmur</a>",
         )
 
     def open_settings(self) -> None:

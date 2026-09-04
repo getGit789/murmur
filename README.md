@@ -24,6 +24,15 @@ anywhere, and run `Murmur.exe`.
 
 Then hold **Right Ctrl** in any app, talk, and let go.
 
+## Uninstall
+
+Windows Settings → Apps → Installed apps → **Murmur** → Uninstall.
+(Any uninstall tool works too — Murmur registers itself properly.)
+Your settings and history are kept; the uninstaller tells you where.
+To remove those as well:
+
+    powershell -ExecutionPolicy Bypass -File "%LOCALAPPDATA%\Programs\Murmur\_internal\uninstall.ps1" -All
+
 ## The app
 
 A real Windows application, not a tray utility.

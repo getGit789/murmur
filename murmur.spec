@@ -12,6 +12,8 @@ binaries += collect_dynamic_libs("onnxruntime")
 binaries += collect_dynamic_libs("av")
 
 datas += [("assets/murmur.ico", "assets")]
+# The uninstaller ships with the app, so "Apps & features" can call it.
+datas += [("uninstall.ps1", ".")]
 
 hiddenimports = [
     "sounddevice",

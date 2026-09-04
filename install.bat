@@ -50,6 +50,21 @@ powershell -NoProfile -Command ^
   "$s.IconLocation='%TARGET%\_internal\assets\murmur.ico';" ^
   "$s.Description='Murmur - Speak. It types.';$s.Save()"
 
+REM Tell Windows the app exists, so "Apps & features" and uninstall
+REM tools can see it and remove it.
+set "REGKEY=HKCU\Software\Microsoft\Windows\CurrentVersion\Uninstall\Murmur"
+set "UNSTR=powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"%TARGET%\_internal\uninstall.ps1\""
+reg add "%REGKEY%" /f /v DisplayName /d "Murmur" >nul
+reg add "%REGKEY%" /f /v DisplayVersion /d "source" >nul
+reg add "%REGKEY%" /f /v Publisher /d "Damir Kranjcevic" >nul
+reg add "%REGKEY%" /f /v InstallLocation /d "%TARGET%" >nul
+reg add "%REGKEY%" /f /v DisplayIcon /d "%TARGET%\Murmur.exe" >nul
+reg add "%REGKEY%" /f /v UninstallString /d "%UNSTR%" >nul
+reg add "%REGKEY%" /f /v QuietUninstallString /d "%UNSTR%" >nul
+reg add "%REGKEY%" /f /v HelpLink /d "https://github.com/getGit789/murmur" >nul
+reg add "%REGKEY%" /f /v NoModify /t REG_DWORD /d 1 >nul
+reg add "%REGKEY%" /f /v NoRepair /t REG_DWORD /d 1 >nul
+
 echo.
 echo Installed. Search the Start Menu for "Murmur".
 echo Turn on "Start Murmur when Windows starts" in Settings (Ctrl+comma).
