@@ -10,22 +10,31 @@ engine, your voice never leaves your machine.
 
 ## Install
 
-One line, in PowerShell:
+**The easy way — no command line.**
 
-    powershell -ExecutionPolicy Bypass -c "irm https://raw.githubusercontent.com/getGit789/murmur/main/install.ps1 | iex"
-
-That downloads the latest release, puts it in
-`%LOCALAPPDATA%\Programs\Murmur`, adds a Start Menu entry, asks whether
-you want a Desktop shortcut (right-click it to pin Murmur to the
-taskbar), registers the app with Windows, and starts it. From then on
-Murmur starts quietly with the computer — no window, just the tray icon
-and the talk key. No admin rights needed.
-
-Rather click? Download `Murmur-win64.zip` from the
-[Releases page](https://github.com/getGit789/murmur/releases), unzip it
-anywhere, and run `Murmur.exe`.
+1. Download **`Murmur-win64.zip`** from the
+   [Releases page](https://github.com/getGit789/murmur/releases).
+2. Right-click the zip → **Extract All**.
+3. Open the folder and double-click **`Murmur.exe`**.
+4. First time only: if Windows shows a blue **"Windows protected your
+   PC"** box, click **More info → Run anyway**. Murmur is unsigned
+   open-source software, so Windows asks once. The app scans clean in
+   Microsoft Defender.
 
 Then hold **Right Ctrl** in any app, talk, and let go.
+
+**Start Murmur with Windows (optional)**, so it is always ready in the
+background:
+
+1. Press **Win + R**, type `shell:startup`, press **Enter**.
+2. In the folder that opens, right-click → **New → Shortcut**.
+3. Browse to the `Murmur.exe` you unzipped. At the end of the target,
+   add a space and `--hidden` — so it reads like
+   `"...\Murmur.exe" --hidden`. Finish. Murmur now starts quietly at
+   login, no window.
+
+No admin rights, and no install command that antivirus mistakes for a
+threat.
 
 **Out of the box** Murmur listens with a Whisper model on your own CPU —
 private, free, no account.
@@ -49,12 +58,16 @@ local model.
 
 ## Uninstall
 
-Windows Settings → Apps → Installed apps → **Murmur** → Uninstall.
-(Any uninstall tool works too — Murmur registers itself properly.)
-Your settings and history are kept; the uninstaller tells you where.
-To remove those as well:
+Quit Murmur (tray icon → Quit, or **Ctrl+Q**), then delete the folder
+you unzipped. That removes the app.
 
-    powershell -ExecutionPolicy Bypass -File "%LOCALAPPDATA%\Programs\Murmur\_internal\uninstall.ps1" -All
+If you added the auto-start shortcut, delete it too: press **Win + R**,
+type `shell:startup`, and delete the Murmur shortcut there.
+
+To also remove your settings, dictionary, and history, delete this
+folder:
+
+    %APPDATA%\Murmur
 
 ## The app
 
