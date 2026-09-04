@@ -1,0 +1,27 @@
+# audio in
+sounddevice==0.5.1
+numpy==2.2.1
+
+# global hotkey + synthetic keystrokes
+pynput==1.7.7
+
+# clipboard
+pyperclip==1.9.0
+
+# interface
+PySide6>=6.8
+
+# icons are drawn in code
+pillow==11.1.0
+
+# local speech-to-text (CPU, int8)
+faster-whisper==1.1.1
+
+# cloud speech-to-text
+httpx==0.28.1
+
+# faster-whisper imports this but does not declare it
+requests==2.32.3
+
+# optional: Claude cleanup pass
+anthropic>=1.0

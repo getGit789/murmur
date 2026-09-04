@@ -1,0 +1,56 @@
+# Copy to:  %APPDATA%\Murmur\config.toml
+
+[hotkey]
+# Hold this key to talk. Options: ctrl_r, alt_r, f9, caps_lock, ctrl_l, alt_l
+key = "ctrl_r"
+
+[audio]
+sample_rate = 16000
+# Ignore clips shorter than this. Stops stray key taps.
+min_seconds = 0.35
+# Ignore clips quieter than this. Stops Whisper inventing words
+# out of room noise. Raise it if junk still gets through.
+min_level = 0.006
+
+[engine]
+# "local"  = runs on your CPU, private, no internet, slower
+# "groq"   = cloud, very fast, needs GROQ_API_KEY
+backend = "local"
+
+[engine.local]
+# tiny.en | base.en | small.en  (bigger = better + slower)
+model = "small.en"
+compute_type = "int8"
+cpu_threads = 6
+
+[engine.groq]
+model = "whisper-large-v3-turbo"
+
+[output]
+# How text lands in the other app. "paste" is fast and reliable.
+mode = "paste"
+# Add a space after the text.
+trailing_space = true
+
+[feedback]
+beep = true
+# The floating bar near the bottom of the screen.
+pill = true
+
+[cleanup]
+# "none"  = type exactly what was heard
+# "rules" = free, instant. Drops "um", fixes spacing and capitals.
+# "llm"   = Claude rewrites it properly. Needs ANTHROPIC_API_KEY.
+mode = "rules"
+
+[cleanup.llm]
+model = "claude-opus-5"
+# low | medium | high | xhigh | max  -- low is the fastest
+effort = "low"
+timeout_seconds = 8
+max_tokens = 4096
+
+[startup]
+# true  = open in the tray with no window. The hotkey still works.
+# The Windows startup shortcut always opens this way.
+hidden = false
