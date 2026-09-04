@@ -2,16 +2,18 @@
 
 from __future__ import annotations
 
+import os
 import tomllib
 from pathlib import Path
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QCheckBox, QComboBox, QDialog, QFormLayout, QHBoxLayout, QLabel,
-    QPushButton, QVBoxLayout, QWidget,
+    QLineEdit, QPushButton, QVBoxLayout, QWidget,
 )
 
 from .. import autostart, config
+from ..engines.groq_api import key_path
 from . import theme
 from ..hotkey import KEY_MAP, friendly_name
 from .tokens import SIZE, SPACE, TYPE
@@ -62,6 +64,17 @@ class SettingsWindow(QDialog):
         self.cleanup.addItems(CLEANUP)
         self.cleanup.setCurrentText(self.settings["cleanup"]["mode"])
         form.addRow(SilkLabel("Cleanup"), self.cleanup)
+
+        self.groq_key = QLineEdit()
+        try:
+            self.groq_key.setText(key_path().read_text(encoding="utf-8").strip())
+        except OSError:
+            pass
+        if not self.groq_key.text() and os.environ.get("GROQ_API_KEY", "").strip():
+            self.groq_key.setPlaceholderText("using the GROQ_API_KEY variable")
+        else:
+            self.groq_key.setPlaceholderText("gsk_...  (free key at console.groq.com)")
+        form.addRow(SilkLabel("Groq key"), self.groq_key)
 
         self.pill = QCheckBox("Show the floating bar while recording")
         self.pill.setChecked(bool(self.settings["feedback"].get("pill", True)))
@@ -123,6 +136,15 @@ class SettingsWindow(QDialog):
         path = config.config_path()
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text, encoding="utf-8")
+
+        # The Groq key lives in its own file, out of the shareable config.
+        key = self.groq_key.text().strip()
+        key_file = key_path()
+        if key:
+            key_file.parent.mkdir(parents=True, exist_ok=True)
+            key_file.write_text(key, encoding="utf-8")
+        elif key_file.exists():
+            key_file.unlink()
 
         want_autostart = self.autostart_box.isChecked()
         if want_autostart != autostart.is_enabled():

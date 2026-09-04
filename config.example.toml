@@ -14,7 +14,8 @@ min_level = 0.006
 
 [engine]
 # "local"  = runs on your CPU, private, no internet, slower
-# "groq"   = cloud, very fast, needs GROQ_API_KEY
+# "groq"   = cloud, very fast, needs a free key - paste it in
+#            Settings (Ctrl+comma) or in %APPDATA%\Murmur\groq.key
 backend = "local"
 
 [engine.local]
@@ -33,7 +34,8 @@ mode = "paste"
 trailing_space = true
 
 [feedback]
-beep = true
+# Off by default: the floating pill is the feedback.
+beep = false
 # The floating bar near the bottom of the screen.
 pill = true
 

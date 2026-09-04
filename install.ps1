@@ -3,12 +3,24 @@
 #   powershell -ExecutionPolicy Bypass -c "irm https://raw.githubusercontent.com/getGit789/murmur/main/install.ps1 | iex"
 #
 # Downloads the latest release, puts it in %LOCALAPPDATA%\Programs\Murmur,
-# adds a Start Menu entry, and starts it. No admin rights needed.
-# Everything Murmur hears stays on your machine when the engine is "local".
+# adds Start Menu and (if you want) Desktop shortcuts, registers the app
+# with Windows, sets it to start quietly with the computer, and starts it.
+# No admin rights needed. With the local engine your voice never leaves
+# your machine.
 
 $ErrorActionPreference = "Stop"
 $repo   = "getGit789/murmur"
 $target = "$env:LOCALAPPDATA\Programs\Murmur"
+
+function New-MurmurShortcut([string]$Path, [string]$Arguments = "") {
+    $s = (New-Object -ComObject WScript.Shell).CreateShortcut($Path)
+    $s.TargetPath       = "$target\Murmur.exe"
+    if ($Arguments) { $s.Arguments = $Arguments }
+    $s.WorkingDirectory = $target
+    $s.IconLocation     = "$target\_internal\assets\murmur.ico"
+    $s.Description      = "Murmur - Speak. It types."
+    $s.Save()
+}
 
 Write-Host "Finding the latest Murmur release..."
 $api     = "https://api.github.com/repos/$repo/releases/latest"
@@ -30,13 +42,22 @@ Expand-Archive -Path $zip -DestinationPath (Split-Path $target) -Force
 Remove-Item $zip -Force
 if (-not (Test-Path "$target\Murmur.exe")) { throw "Unpack failed - Murmur.exe is missing." }
 
-$lnk = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Murmur.lnk"
-$s = (New-Object -ComObject WScript.Shell).CreateShortcut($lnk)
-$s.TargetPath       = "$target\Murmur.exe"
-$s.WorkingDirectory = $target
-$s.IconLocation     = "$target\_internal\assets\murmur.ico"
-$s.Description      = "Murmur - Speak. It types."
-$s.Save()
+# Start Menu entry, always.
+$programs = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs"
+New-MurmurShortcut "$programs\Murmur.lnk"
+
+# Desktop shortcut, if wanted. From the Desktop (or the Start Menu) you
+# can right-click Murmur and choose "Pin to taskbar".
+$answer = "y"
+try { $answer = Read-Host "Add a Desktop shortcut? (Y/n)" } catch { $answer = "y" }
+if ($answer -notmatch "^\s*n") {
+    New-MurmurShortcut "$env:USERPROFILE\Desktop\Murmur.lnk"
+    Write-Host "Desktop shortcut added. Right-click it to Pin to taskbar."
+}
+
+# Start with Windows, quietly: tray only, no window. The talk key
+# works the moment you log in.
+New-MurmurShortcut "$programs\Startup\Murmur.lnk" "--hidden"
 
 # Tell Windows the app exists, so it shows up in "Apps & features"
 # (and in uninstall tools) with a working Uninstall button.
@@ -58,6 +79,7 @@ New-ItemProperty -Path $reg -Name EstimatedSize   -Value $kb -PropertyType DWord
 
 Write-Host ""
 Write-Host "Installed. Hold Right Ctrl in any app, talk, let go - it types."
-Write-Host "Settings live under Ctrl+comma."
+Write-Host "Murmur starts quietly with Windows from now on."
+Write-Host "Settings live under Ctrl+comma (a free Groq key there makes it faster)."
 Write-Host "Uninstall any time from Windows Settings > Apps > Murmur."
 Start-Process "$target\Murmur.exe"

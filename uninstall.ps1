@@ -27,6 +27,7 @@ Start-Sleep -Seconds 1
 $programs = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs"
 Remove-Item -LiteralPath "$programs\Murmur.lnk" -Force              # Start Menu
 Remove-Item -LiteralPath "$programs\Startup\Murmur.lnk" -Force      # start with Windows
+Remove-Item -LiteralPath "$env:USERPROFILE\Desktop\Murmur.lnk" -Force  # Desktop
 Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\Murmur" -Recurse -Force
 Remove-Item -LiteralPath $target -Recurse -Force
 

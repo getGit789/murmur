@@ -4,8 +4,10 @@ setlocal
 set "TARGET=%LOCALAPPDATA%\Programs\Murmur"
 set "SM=%APPDATA%\Microsoft\Windows\Start Menu\Programs\Murmur.lnk"
 set "SU=%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\Murmur.lnk"
+set "DT=%USERPROFILE%\Desktop\Murmur.lnk"
 
 taskkill /im Murmur.exe /f >nul 2>&1
+if exist "%DT%" del "%DT%"
 if exist "%SU%" del "%SU%"
 if exist "%SM%" del "%SM%"
 if exist "%TARGET%" rmdir /s /q "%TARGET%"

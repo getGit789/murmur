@@ -25,7 +25,7 @@ DEFAULTS: dict[str, Any] = {
         },
     },
     "output": {"mode": "paste", "trailing_space": True},
-    "feedback": {"beep": True, "pill": True},
+    "feedback": {"beep": False, "pill": True},
     "startup": {"hidden": False},
 }
 
