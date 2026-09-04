@@ -10,31 +10,26 @@ engine, your voice never leaves your machine.
 
 ## Install
 
-**The easy way — no command line.**
+**The easy way — a normal installer.**
 
-1. Download **`Murmur-win64.zip`** from the
+1. Download the latest **`Murmur-Setup-…exe`** from the
    [Releases page](https://github.com/getGit789/murmur/releases).
-2. Right-click the zip → **Extract All**.
-3. Open the folder and double-click **`Murmur.exe`**.
-4. First time only: if Windows shows a blue **"Windows protected your
-   PC"** box, click **More info → Run anyway**. Murmur is unsigned
+2. Double-click it. If Windows shows a blue **"Windows protected your
+   PC"** box, click **More info → Run anyway** — Murmur is unsigned
    open-source software, so Windows asks once. The app scans clean in
    Microsoft Defender.
+3. The setup asks whether you want a **desktop shortcut** and to
+   **start Murmur with Windows** (running quietly in the background).
+   Tick what you like and finish.
+
+Murmur opens, and appears in **Start** and in **Settings → Apps** like
+any normal program. No admin rights needed.
 
 Then hold **Right Ctrl** in any app, talk, and let go.
 
-**Start Murmur with Windows (optional)**, so it is always ready in the
-background:
-
-1. Press **Win + R**, type `shell:startup`, press **Enter**.
-2. In the folder that opens, right-click → **New → Shortcut**.
-3. Browse to the `Murmur.exe` you unzipped. At the end of the target,
-   add a space and `--hidden` — so it reads like
-   `"...\Murmur.exe" --hidden`. Finish. Murmur now starts quietly at
-   login, no window.
-
-No admin rights, and no install command that antivirus mistakes for a
-threat.
+**Prefer no installer?** Download **`Murmur-win64.zip`** instead,
+right-click → **Extract All**, and run **`Murmur.exe`**. It is portable:
+it just runs, with no shortcuts and no auto-start.
 
 **Out of the box** Murmur listens with a Whisper model on your own CPU —
 private, free, no account.
@@ -58,16 +53,16 @@ local model.
 
 ## Uninstall
 
-Quit Murmur (tray icon → Quit, or **Ctrl+Q**), then delete the folder
-you unzipped. That removes the app.
+If you used the installer: **Settings → Apps → Installed apps →
+Murmur → Uninstall.** Any uninstall tool works too — Murmur registers
+itself properly. Your settings and history are kept.
 
-If you added the auto-start shortcut, delete it too: press **Win + R**,
-type `shell:startup`, and delete the Murmur shortcut there.
-
-To also remove your settings, dictionary, and history, delete this
-folder:
+To also remove those, delete this folder:
 
     %APPDATA%\Murmur
+
+If you used the portable zip instead, just quit Murmur (tray icon →
+Quit) and delete the folder you unzipped.
 
 ## The app
 

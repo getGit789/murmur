@@ -11,7 +11,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 NAME = "Murmur"
-VERSION = "1.2.0"
+VERSION = "1.3.0"
 TAGLINE = "Speak. It types."
 
 # Light + teal
