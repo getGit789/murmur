@@ -5,3 +5,4 @@ config.toml
 _preview/
 build/
 dist/
+Murmur-win64.zip
