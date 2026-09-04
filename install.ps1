@@ -58,5 +58,6 @@ New-ItemProperty -Path $reg -Name EstimatedSize   -Value $kb -PropertyType DWord
 
 Write-Host ""
 Write-Host "Installed. Hold Right Ctrl in any app, talk, let go - it types."
-Write-Host "Settings live under Ctrl+comma. Uninstall: delete $target"
+Write-Host "Settings live under Ctrl+comma."
+Write-Host "Uninstall any time from Windows Settings > Apps > Murmur."
 Start-Process "$target\Murmur.exe"
