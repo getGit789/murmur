@@ -35,6 +35,10 @@ STATE_COLOUR = {
 # Magenta is the "see through this" key colour for the pill window.
 CHROMA_KEY = "#ff00fe"
 
+# Every size Windows asks for, from the tray at 100% up to the desktop
+# at 200%. Each one is drawn fresh, never stretched from another.
+ICO_SIZES = [16, 20, 24, 32, 40, 48, 64, 96, 128, 256]
+
 
 def _hex_to_rgb(value: str) -> tuple[int, int, int]:
     value = value.lstrip("#")
@@ -60,23 +64,38 @@ def draw_mark(size: int, state: str = "idle", solid: bool = True) -> Image.Image
 
     unit = box / 64.0
 
+    # Small icons need a bigger, bolder mark or the mic turns to fluff
+    # in the tray. The shape is zoomed about the centre, and no stroke
+    # is allowed thinner than about 1.6 real pixels.
+    zoom = 1.0 if size >= 64 else 1.15 if size >= 32 else 1.32
+    thinnest = 1.6 * scale
+
+    def at(value: float) -> float:
+        """A point on the 64 unit grid, zoomed about the centre."""
+        return (32 + (value - 32) * zoom) * unit
+
+    def wide(value: float) -> float:
+        """A width on the 64 unit grid, never thinner than `thinnest`."""
+        return max(value * zoom * unit, thinnest)
+
     # A mic capsule sitting in a cradle. Bold and simple, so it still
     # reads at 16 pixels in the taskbar.
     draw.rounded_rectangle(
-        (27 * unit, 15 * unit, 37 * unit, 35 * unit),
-        radius=5 * unit,
+        (at(27), at(15), at(37), at(35)),
+        radius=5 * zoom * unit,
         fill=ink,
     )
     draw.arc(
-        (21 * unit, 21 * unit, 43 * unit, 43 * unit),
+        (at(21), at(21), at(43), at(43)),
         start=0,
         end=180,
         fill=ink,
-        width=int(3.6 * unit),
+        width=int(wide(3.6)),
     )
+    stem = wide(3.2) / 2
     draw.rounded_rectangle(
-        (30.4 * unit, 41 * unit, 33.6 * unit, 50 * unit),
-        radius=1.6 * unit,
+        (at(32) - stem, at(41), at(32) + stem, at(50)),
+        radius=stem,
         fill=ink,
     )
 
@@ -84,9 +103,20 @@ def draw_mark(size: int, state: str = "idle", solid: bool = True) -> Image.Image
 
 
 def write_ico(path: Path) -> Path:
-    """Save a multi size .ico for the window and, later, the installer."""
+    """Save a multi size .ico for the exe, the shortcuts and the installer.
+
+    The biggest frame must be the base image. Pillow throws away every
+    requested size larger than the base, so a 16 pixel base would leave
+    a file with nothing but a 16 pixel icon in it - and Windows would
+    stretch that across the desktop.
+    """
     path.parent.mkdir(parents=True, exist_ok=True)
-    sizes = [16, 24, 32, 48, 64, 128, 256]
-    frames = [draw_mark(s, "recording") for s in sizes]
-    frames[0].save(path, format="ICO", sizes=[(s, s) for s in sizes], append_images=frames[1:])
+    frames = [draw_mark(s, "recording") for s in ICO_SIZES]
+    base, rest = frames[-1], frames[:-1]
+    base.save(
+        path,
+        format="ICO",
+        sizes=[(s, s) for s in ICO_SIZES],
+        append_images=rest,
+    )
     return path

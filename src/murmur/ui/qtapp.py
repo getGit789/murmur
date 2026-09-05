@@ -6,6 +6,7 @@ push to talk hotkey alive while you are working somewhere else.
 
 from __future__ import annotations
 
+import functools
 import sys
 from pathlib import Path
 
@@ -24,13 +25,19 @@ from .main_window import MainWindow
 from .pill import Pill
 
 
+@functools.lru_cache(maxsize=None)
 def _icon(state: str = "idle") -> QIcon:
-    """Reuse the same mark the tray has always used."""
-    image = brand.draw_mark(64, state).convert("RGBA")
-    qimage = QImage(
-        image.tobytes("raw", "RGBA"), image.width, image.height, QImage.Format_RGBA8888
-    )
-    return QIcon(QPixmap.fromImage(qimage))
+    """The same mark at every size, so the tray, the taskbar and the
+    title bar each get one drawn for them instead of a scaled copy."""
+    icon = QIcon()
+    for size in brand.ICO_SIZES:
+        image = brand.draw_mark(size, state).convert("RGBA")
+        qimage = QImage(
+            image.tobytes("raw", "RGBA"), image.width, image.height,
+            QImage.Format_RGBA8888,
+        )
+        icon.addPixmap(QPixmap.fromImage(qimage))
+    return icon
 
 
 class HotkeyBridge(QObject):
