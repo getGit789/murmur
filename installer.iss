@@ -4,7 +4,7 @@
 ; and press Build, or run:  iscc installer.iss
 
 #define AppName    "Murmur"
-#define AppVersion "1.3.0"
+#define AppVersion "1.4.0"
 #define AppExe     "Murmur.exe"
 
 [Setup]
