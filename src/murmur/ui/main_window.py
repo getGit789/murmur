@@ -181,7 +181,8 @@ class MainWindow(QMainWindow):
         window = SettingsWindow(self)
         window.saved.connect(
             lambda: self.statusBar().showMessage(
-                "Settings saved. Restart Murmur to change engine or model."
+                "Settings saved. Restart Murmur to apply a new talk key, "
+                "engine, model, or cleanup."
             )
         )
         window.exec()

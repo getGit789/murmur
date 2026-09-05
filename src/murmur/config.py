@@ -17,6 +17,7 @@ DEFAULTS: dict[str, Any] = {
     },
     "cleanup": {
         "mode": "rules",
+        "remove_repeats": False,
         "llm": {
             "model": "claude-opus-5",
             "effort": "low",

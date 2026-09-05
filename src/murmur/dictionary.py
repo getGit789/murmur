@@ -119,19 +119,40 @@ def dictionary_path() -> Path:
     return config.config_dir() / "dictionary.toml"
 
 
+# One character that means "still inside a word": a letter or digit in any
+# alphabet, the underscore, or a combining accent mark (the kind that sits
+# on top of the letter before it). A match glued to one of these is only
+# part of a longer word, so the rule must leave it alone.
+#
+# Decided on purpose:
+#   underscore  = word character, so "my_cafe_var" is never touched
+#   apostrophe  = boundary, so "cafe's" becomes "coffee's"
+WORD_CHAR = (
+    r"[\w"
+    r"\u0300-\u036f"    # combining diacritical marks
+    r"\u1ab0-\u1aff"    # ... extended
+    r"\u1dc0-\u1dff"    # ... supplement
+    r"\u20d0-\u20ff"    # ... for symbols
+    r"\ufe20-\ufe2f"    # ... half marks
+    r"]"
+)
+WORD_CHAR_RE = re.compile(WORD_CHAR)
+
+
 def _pattern_for(heard: str) -> re.Pattern[str]:
     """Whole word, case insensitive, and tolerant of glue.
 
     The parts may be separated by spaces, hyphens, or nothing at all, so
     "Claude Code", "Claude-Code" and "ClaudeCode" all match. The lookarounds
-    demand the whole pattern, which is what keeps "Cloudflare" safe.
+    demand the whole pattern, which is what keeps "Cloudflare" safe. They
+    understand every alphabet, so "cafe" never fires inside "cafeč".
     """
     parts = [re.escape(part) for part in heard.split() if part]
     if not parts:
         return re.compile(r"(?!x)x")  # matches nothing
     body = r"[\s\-_]*".join(parts)
     return re.compile(
-        r"(?<![A-Za-z0-9])" + body + r"(?![A-Za-z0-9])",
+        r"(?<!" + WORD_CHAR + ")" + body + r"(?!" + WORD_CHAR + ")",
         flags=re.IGNORECASE,
     )
 
@@ -246,10 +267,12 @@ class Dictionary:
         term = term.strip()
         if term and term.lower() not in {t.lower() for t in self.terms}:
             self.terms.append(term)
+            self._recompile()
             self.save()
 
     def remove_term(self, term: str) -> None:
         self.terms = [t for t in self.terms if t.lower() != term.lower()]
+        self._recompile()
         self.save()
 
     def set_correction(self, heard: str, written: str, replacing: str = "") -> None:
@@ -281,17 +304,32 @@ class Dictionary:
             return ""
         return ", ".join(chosen) + "."
 
+    def spellings(self) -> list[str]:
+        """Every spelling you asked for: your terms, plus whatever your
+        corrections write. The cleanup pass must not undo any of these,
+        so "iPhone" keeps its small i at the start of a sentence."""
+        seen: set[str] = set()
+        out: list[str] = []
+        for word in [*self.terms, *self.corrections.values()]:
+            if word and word not in seen:
+                seen.add(word)
+                out.append(word)
+        return out
+
     def apply(self, text: str) -> tuple[str, list[Applied]]:
         """The correction pass AFTER listening. Returns the new text and
         a note of every rule that fired, so the history can show it."""
+        # The replacement is handed over as a function, never as a string.
+        # A string would be read as a regex template, and a value such as
+        # C:\\Users\\... would crash on the "\\U".
         applied: list[Applied] = []
         for heard, pattern, written in self._rules:
-            text, count = pattern.subn(written, text)
+            text, count = pattern.subn(lambda _m, value=written: value, text)
             if count:
                 applied.append(Applied(heard=heard, written=written, count=count))
 
         for pattern, term in self._case_rules:
-            fixed, count = pattern.subn(term, text)
+            fixed, count = pattern.subn(lambda _m, value=term: value, text)
             if count and fixed != text:
                 applied.append(Applied(heard=term, written=term, count=count))
             text = fixed

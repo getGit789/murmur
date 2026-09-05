@@ -32,7 +32,7 @@ def build(settings: dict[str, Any]) -> Cleaner:
     if mode == "rules":
         from .rules import RulesCleaner
 
-        return RulesCleaner()
+        return RulesCleaner(remove_repeats=bool(settings.get("remove_repeats", False)))
     if mode == "llm":
         from .llm import ClaudeCleaner
 

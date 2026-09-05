@@ -45,7 +45,7 @@ class ClaudeCleaner:
     def clean(self, text: str, terms: Sequence[str] = ()) -> str:
         if not text.strip():
             return text
-        safe = self._fallback.clean(text)
+        safe = self._fallback.clean(text, terms)
 
         system = SYSTEM
         if terms:

@@ -44,6 +44,9 @@ pill = true
 # "rules" = free, instant. Drops "um", fixes spacing and capitals.
 # "llm"   = Claude rewrites it properly. Needs ANTHROPIC_API_KEY.
 mode = "rules"
+# Drop a word or short phrase said twice in a row ("the the cat").
+# Off by default: it cannot tell a stumble from "I had had enough".
+remove_repeats = false
 
 [cleanup.llm]
 model = "claude-opus-5"

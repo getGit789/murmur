@@ -65,7 +65,9 @@ class SettingsWindow(QDialog):
         self.cleanup.setCurrentText(self.settings["cleanup"]["mode"])
         form.addRow(SilkLabel("Cleanup"), self.cleanup)
 
+        # The key is a secret. Dots by default, plain text only on request.
         self.groq_key = QLineEdit()
+        self.groq_key.setEchoMode(QLineEdit.EchoMode.Password)
         try:
             self.groq_key.setText(key_path().read_text(encoding="utf-8").strip())
         except OSError:
@@ -74,7 +76,19 @@ class SettingsWindow(QDialog):
             self.groq_key.setPlaceholderText("using the GROQ_API_KEY variable")
         else:
             self.groq_key.setPlaceholderText("gsk_...  (free key at console.groq.com)")
-        form.addRow(SilkLabel("Groq key"), self.groq_key)
+        self.show_key = QCheckBox("Show")
+        self.show_key.toggled.connect(
+            lambda on: self.groq_key.setEchoMode(
+                QLineEdit.EchoMode.Normal if on else QLineEdit.EchoMode.Password
+            )
+        )
+        key_row = QWidget()
+        key_layout = QHBoxLayout(key_row)
+        key_layout.setContentsMargins(0, 0, 0, 0)
+        key_layout.setSpacing(SPACE.sm)
+        key_layout.addWidget(self.groq_key, 1)
+        key_layout.addWidget(self.show_key)
+        form.addRow(SilkLabel("Groq key"), key_row)
 
         self.pill = QCheckBox("Show the floating bar while recording")
         self.pill.setChecked(bool(self.settings["feedback"].get("pill", True)))
@@ -98,9 +112,9 @@ class SettingsWindow(QDialog):
 
         note = QLabel(
             "The talk key works everywhere, even with this window closed. "
-            "Changing the engine or model takes effect the next time "
-            "Murmur starts. The Windows startup copy always opens in "
-            "the tray."
+            "A new talk key, engine, model, or cleanup takes effect the "
+            "next time Murmur starts. The Windows startup copy always "
+            "opens in the tray."
         )
         note.setObjectName("Hint")
         note.setWordWrap(True)

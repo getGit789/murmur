@@ -147,10 +147,18 @@ class Controller(QObject):
                 return
 
             # MECHANISM 2: the correction pass afterwards.
-            text, applied = self.dictionary.apply(raw)
+            # A broken rule must never swallow what you said: fall back
+            # to the raw words, paste them, and say so on the status bar.
+            trouble = ""
+            try:
+                text, applied = self.dictionary.apply(raw)
+            except Exception:
+                traceback.print_exc()
+                text, applied = raw, []
+                trouble = "A dictionary rule failed. Raw text pasted."
 
             try:
-                text = self.cleaner.clean(text, self.dictionary.terms)
+                text = self.cleaner.clean(text, self.dictionary.spellings())
             except Exception:
                 traceback.print_exc()
 
@@ -176,6 +184,10 @@ class Controller(QObject):
             )
             self.history.add(entry)
             self.entry_added.emit(entry)
+
+            if trouble:
+                self.state_changed.emit("error", trouble)
+                return
 
             fired = f"  ({len(applied)} fixed)" if applied else ""
             preview = text if len(text) <= 46 else text[:43] + "..."
